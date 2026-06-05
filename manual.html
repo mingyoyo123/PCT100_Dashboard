@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCT_100 产品说明书</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 保持与首页一致的样式代码 */
+        :root { --primary: #0ea5e9; --primary-dark: #0284c7; --accent: #8b5cf6; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --muted: #475569; --border: #e2e8f0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--muted); line-height: 1.7; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px; }
+        .navbar { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 1rem 0; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .navbar a { color: var(--text); text-decoration: none; padding: 8px 20px; margin: 0 5px; font-weight: 600; border-radius: 20px; transition: 0.3s; }
+        .navbar a:hover { background: var(--primary); color: white; }
+        .navbar a.active { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3); }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; animation: fadeIn 0.6s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: var(--card); padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid var(--border); transition: 0.3s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(0,0,0,0.05); border-color: #bae6fd; }
+        h1 { color: var(--text); background: linear-gradient(135deg, var(--primary-dark), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h2 { color: var(--text); border-left: 4px solid var(--primary); padding-left: 12px; margin-top: 0; }
+        
+        .alert { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 0 8px 8px 0; margin: 15px 0; color: #b45309; font-weight: bold; }
+        .faq-item { border-bottom: 1px dashed var(--border); padding: 15px 0; }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-q { color: var(--primary-dark); font-weight: bold; margin-bottom: 5px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #f1f5f9; color: var(--text); }
+        footer { text-align: center; padding: 30px; color: #94a3b8; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html"><i class="fa-solid fa-house"></i> 首页概览</a>
+        <a href="manual.html" class="active"><i class="fa-solid fa-book"></i> 产品说明书</a>
+        <a href="mqtt.html"><i class="fa-solid fa-network-wired"></i> 远程网络配置</a>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1><i class="fa-solid fa-clipboard-check"></i> PCT_100 操作与维护手册</h1>
+            <p>本文档详细说明了基于 ESP32 核心架构的控制逻辑、传感器算法以及设备故障排查方案。</p>
+        </div>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-gamepad"></i> 1. 物理按键与安全逻辑</h2>
+            <ul>
+                <li><strong>KEY1 (系统总闸)：</strong> 最高优先级安全锁。断开时，所有继电器强制切断，系统进入静默监测状态。</li>
+                <li><strong>KEY2 (长按两秒)：</strong> 实现“自动模式”与“手动模式”的无缝切换。</li>
+                <li><strong>KEY2 (短按触发)：</strong> 仅在手动模式下生效，循环切换继电器通道输出状态。</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-temperature-half"></i> 2. 传感器倒相算法说明</h2>
+            <div class="alert">
+                <i class="fa-solid fa-triangle-exclamation"></i> 核心逻辑警示：<br>
+                本项目针对光敏电阻采用了 ADC 反相处理算法。ADC 采样数值越高，代表环境越暗；数值越低，代表环境越亮！
+            </div>
+            <table>
+                <tr><th>传感器类型</th><th>接口</th><th>自动模式触发条件</th></tr>
+                <tr><td>光照传感器</td><td>ADC1_CH1</td><td>当前环境光照值 > 150.0 lx (光线变暗) 时，自动点亮照明灯。</td></tr>
+                <tr><td>DS18B20 测温</td><td>GPIO 10</td><td>当前环境温度 > 34.0°C 时，自动启动散热风扇继电器。</td></tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-wrench"></i> 3. 常见故障排查 (FAQ)</h2>
+            <div class="faq-item">
+                <div class="faq-q"><i class="fa-regular fa-circle-question"></i> Q: 为什么设备通电后，继电器不受按键控制？</div>
+                <div class="faq-a">A: 请检查总闸 (KEY1) 是否处于闭合状态。出于安全考虑，总闸断开时拒绝响应任何驱动指令。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q"><i class="fa-regular fa-circle-question"></i> Q: WS2812 状态灯呈现红蓝交替闪烁是什么意思？</div>
+                <div class="faq-a">A: 此为系统发出的单项环境越界警报，通常意味着光照过暗或温度过热触发了系统的应急响应机制。</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Hebei GEO University - 嵌入式系统与人工智能实验室</p>
+    </footer>
+
+</body>
+</html>
