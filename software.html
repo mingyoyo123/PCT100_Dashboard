@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>软件与配网 - PCT-100</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="logo"><span>⬡</span> PCT-100 实训平台</div>
+        <div class="nav-links">
+            <a href="index.html" class="">产品说明书</a>
+            <a href="software.html" class="btn-active">软件与配网</a>
+            <a href="about.html" class="">关于项目</a>
+            <a href="https://github.com/mingyoyo123/PCT100_Dashboard/tree/main" target="_blank">下载中心</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">💻 软件配置</div>
+            <a href="#wifi" class="menu-item active">1. Wi-Fi 配网指南</a>
+            <a href="#mqtt" class="menu-item">2. MQTT 高级设定</a>
+            <a href="#profile" class="menu-item">3. Profile 方案管理</a>
+        </div>
+        
+        <div class="main-content">
+            <div id="wifi" class="content-section">
+                <h2>1. Wi-Fi 配网指南</h2>
+                <p>PCT-100 提供了基于串口（Baud: 115200）的交互式配置菜单，无需修改代码重新编译即可更换网络环境。</p>
+                <pre><code>========== 设备交互菜单 ==========
+  1. 扫描并连接 WiFi (自动保存)
+  2. 清除已保存的 WiFi 网络
+  3. MQTT 远程服务器高级配置指南
+==================================
+请选择 (1/2/3):</code></pre>
+                <p>输入 <code>1</code> 后，系统将扫描并列出带编号的网络列表，输入 <code>c &lt;编号&gt; &lt;密码&gt;</code> 即可连接，凭证会自动写入 ESP32 NVS 闪存中。</p>
+            </div>
+
+            <div id="mqtt" class="content-section">
+                <h2>2. MQTT 高级设定</h2>
+                <p>系统运行中支持动态修改物联网接入点：</p>
+                <ul>
+                    <li><code>mqtt_info</code>：打印当前生效的 IP、端口、账号和设备 ID。</li>
+                    <li><code>mqtt_ip 47.98.170.180</code>：修改 MQTT 服务器地址。</li>
+                    <li><code>mqtt_id PCT_100_005</code>：更改本设备的唯一标识符。</li>
+                    <li><code>mqtt_apply</code>：保存以上所有修改并重启设备。</li>
+                </ul>
+            </div>
+
+            <div id="profile" class="content-section">
+                <h2>3. Profile (配置方案) 快速切换</h2>
+                <p>为了方便在不同网络环境之间频繁切换，固件加入了配置预设功能：</p>
+                <div class="callout">
+                    <strong>保存方案：</strong> <code>mqtt_save_profile config1</code><br>
+                    <strong>加载方案：</strong> <code>mqtt_load_profile config2</code><br>
+                    <strong>查看所有方案：</strong> <code>mqtt_list_profiles</code>
+                </div>
+            </div>
+            
+            <div style="height: 400px;"></div>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sections = document.querySelectorAll('.content-section');
+        const navItems = document.querySelectorAll('.sidebar .menu-item');
+        const sidebar = document.querySelector('.sidebar');
+        let currentActive = '';
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const scrollY = window.pageYOffset;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            if (scrollY < 100 && navItems.length > 0) {
+                current = sections[0].getAttribute('id');
+            }
+
+            if (current !== currentActive) {
+                currentActive = current;
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('href') === '#' + current) {
+                        item.classList.add('active');
+                        
+                        if (window.innerWidth <= 768) {
+                            const scrollLeftPos = item.offsetLeft - (sidebar.offsetWidth / 2) + (item.offsetWidth / 2);
+                            sidebar.scrollTo({
+                                left: scrollLeftPos,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+    </script>
+</body>
+</html>
