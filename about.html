@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于项目 - PCT-100</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="logo"><span>⬡</span> PCT-100 实训平台</div>
+        <div class="nav-links">
+            <a href="index.html" class="">产品说明书</a>
+            <a href="software.html" class="">软件与配网</a>
+            <a href="about.html" class="btn-active">关于项目</a>
+            <a href="https://github.com/mingyoyo123/PCT100_Dashboard/tree/main" target="_blank">下载中心</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">👥 关于项目</div>
+            <a href="#story" class="menu-item active">1. 研发背景</a>
+            <a href="#team" class="menu-item">2. 合作与协助</a>
+            <a href="#version" class="menu-item">3. 迭代历史</a>
+        </div>
+        
+        <div class="main-content">
+            <div id="story" class="content-section">
+                <div class="hero-banner">
+                    <h1>研发背景与初衷</h1>
+                    <p>从底层多任务调度到上层物联网通信的全面实践</p>
+                </div>
+                <p>PCT-100 智能化工控制实训装置 (固件版本 V2.6) 诞生于嵌入式系统开发与物联网综合实训课程。传统单片机开发方案通常采用单线程轮询结构，当遇到 Wi-Fi 连接阻塞或 MQTT 远程握手延迟时，会导致本地的按键响应与执行机构保护发生严重滞后，这在工业自动化控制中是极其危险的。</p>
+                <p>为了攻克这一痛点，我们小组彻底重构了底层固件。利用先进的 FreeRTOS 实时内核构建了多线程并发架构，将传感器即时刷新与核心防灾响应保留在主核，将高延迟的网络事务分流至后台线程，保证了本地控灾系统始终处于毫秒级的极速响应状态。</p>
+            </div>
+
+            <div id="team" class="content-section">
+                <h2>2. 合作与协助</h2>
+                <div class="callout">
+                    <strong>团队声明：</strong> 本实训项目全套软硬件系统由 <strong>pct-100-002小组</strong> 独立研发、编写、调试并组装完成。
+                </div>
+                <p>在研发阶段，我们小组成员紧密协作、明确分工。通过使用 <code>portENTER_CRITICAL(&sysMux)</code> 临界区写入锁技术，完美解决了多线程并发写入全局变量时的竞争冲突（Race Conditions）问题；同时，针对复杂的网络交互场景，小组协同设计了免刷机串口动态配网与多配置方案（Profile）闪存持久化算法，极大地提升了系统的工程应用价值。</p>
+            </div>
+
+            <div id="version" class="content-section">
+                <h2>3. 版本迭代历史</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>固件版本</th>
+                            <th>发布日期</th>
+                            <th>重大更新与核心技术控点</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>V2.6</strong></td>
+                            <td>2026-06-03</td>
+                            <td>全面改版。重构 FreeRTOS 线程拓扑；编写按键中断电磁火花干扰静默拦截算法；优化 OLED 200ms 异步非阻塞刷新机制。</td>
+                        </tr>
+                        <tr>
+                            <td><strong>V2.0</strong></td>
+                            <td>2026-05-20</td>
+                            <td>加入基于 Preferences 库的 EEPROM 非易失性本地存储；实现多方案（Profile）快速参数切换；上线突变上报与 5s 定时心跳上报机制。</td>
+                        </tr>
+                        <tr>
+                            <td><strong>V1.0</strong></td>
+                            <td>2026-05-10</td>
+                            <td>跑通单线程循环。实现基于 Dallas 库的温度读取、光敏 ADC 采集以及基础的手动步进控制。</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="height: 400px;"></div>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sections = document.querySelectorAll('.content-section');
+        const navItems = document.querySelectorAll('.sidebar .menu-item');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const scrollY = window.pageYOffset;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === '#' + current) {
+                    item.classList.add('active');
+                }
+            });
+            
+            if (scrollY < 100 && navItems.length > 0) {
+                navItems.forEach(item => item.classList.remove('active'));
+                navItems[0].classList.add('active');
+            }
+        });
+    });
+    </script>
+</body>
+</html>
